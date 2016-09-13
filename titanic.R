@@ -23,7 +23,6 @@ combi<-rbind(train,test)
 
 ## extracting titles from passangeres' names ##
 
-# 1st manner
 combi$Title<-sapply(combi$Name,FUN=function(x){strsplit(x,split = '[,.]')[[1]][2]})
 combi$Title<-sub(' ','',combi$Title)
 combi$Title[combi$PassengerId == 797] <- 'Mrs' # female doctor
@@ -32,21 +31,6 @@ combi$Title[combi$Title %in% c('Capt', 'Don', 'Major', 'Sir', 'Col', 'Jonkheer',
 combi$Title[combi$Title %in% c('Dona')] <- 'Mrs'
 combi$Title <- factor(combi$Title)
 
-# 2nd manner
-combi$Tile_2<-gsub('.*, |\\..*', '',combi$Name)
-common_title <- c('Miss', 'Mrs', 'Mr','Master')
-noble_title <- c('Don', 'Dona','Sir','the Countess', 'Lady', 'Jonkheer')
-
-'%!in%' <- function(x,y)!('%in%'(x,y))  #define not in function
-
-#Assign names to similar ones to avoid outliers
-combi$Tile_2[combi$Tile_2 == 'Mlle']        <- 'Miss' 
-combi$Tile_2[combi$Tile_2 == 'Ms']          <- 'Miss'
-combi$Tile_2[combi$Tile_2 == 'Mme']         <- 'Mrs' 
-combi$Tile_2[combi$Tile_2 == 'Capt']        <- 'Mr'
-combi$Tile_2[combi$Tile_2 %!in% common_title && combi$Tile_2%!in% noble_title]  <- 'Rare Title'
-combi$Tile_2[combi$Tile_2 %in% noble_title] <- 'Noble'
-combi$Tile_2 <- as.factor(combi$Tile_2)
 
 ## caclulating family size
 combi$FamilySize<-combi$SibSp + combi$Parch +1 
