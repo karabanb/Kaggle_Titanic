@@ -17,7 +17,7 @@ test$Survived<-0
 
 ################################################################################
 
-#### CLEANING DATA SET
+#### CLEANING DATA
 
 combi<-rbind(train,test)
 
