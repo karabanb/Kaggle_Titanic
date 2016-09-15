@@ -53,6 +53,15 @@ combi$Age_full<-predict(predicted.age, combi)
 ## filing missing Embarked values
 in.training$Embarked[c(62,830)]<-"C"
 
+## filling missing Fare Value
+combi$Fare[1044]<-mean(combi$Fare, na.rm=T)
+
+## converting usefull variables into facotrs
+combi$Survived<-as.factor(combi$Survived)
+combi$Pclass<-as.factor(combi$Pclass)
+combi$Sex<-as.factor(combi$Sex)
+combi$Embarked<-as.factor(combi$Embarked)
+combi$Deck<-as.factor(combi$Deck)
 
 ############################## Building the models #########################################
 
@@ -69,8 +78,12 @@ write.csv(my_solution_1,"tree_1_Titanic.csv",row.names = F)
 conf.matrix_bench<-table(predicted.train,in.training$Survived)
 print(conf.matrix_bench)
 
+rf<-randomForest(Survived~ Pclass + Sex + Age_full + SibSp + Parch + Fare + Embarked + Title_2 + FamilySize, data=in.training)
+predict.rf<-predict(rf,in.training, type="class")
+predicted.test.rf<-predict(rf,in.testing,type="class")
+conf.matrix.rf<-table(predict.rf, in.training$Survived)
+print(conf.matrix.rf)
+print(conf.matrix_bench)
 
-
-
-
-
+my_solution_2<-data.frame(PassengerID=test$PassengerId,Survived=predicted.test.rf)
+write.csv(my_solution_2,"rf_Titanic.csv",row.names = F)
