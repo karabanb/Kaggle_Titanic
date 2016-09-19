@@ -69,7 +69,7 @@ combi$Deck<-as.factor(combi$Deck)
 set.seed(1234)
 in.training<-combi[1:891,]
 in.testing<-combi[892:nrow(combi),]
-tree_1<-rpart(Survived~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked + Title_2 + FamilySize + Deck, data=in.training, method = "class")
+tree_1<-rpart(Survived~ Pclass + Sex + Age_full+ SibSp + Parch + Fare + Embarked + Title_2 + FamilySize + Deck, data=in.training, method = "class")
 predicted.test_1<-predict(tree_1,in.testing, type = "class")
 predicted.train<-predict(tree_1,in.training, type = "class")
 
@@ -78,7 +78,9 @@ write.csv(my_solution_1,"tree_1_Titanic.csv",row.names = F)
 conf.matrix_bench<-table(predicted.train,in.training$Survived)
 print(conf.matrix_bench)
 
-rf<-randomForest(Survived~ Pclass + Sex + Age_full + SibSp + Parch + Fare + Embarked + Title_2 + FamilySize, data=in.training)
+## Acc: train: 0.89674, test: 0.79904
+
+rf<-randomForest(Survived~ Pclass + Sex + Age_full + SibSp + Parch + Fare + Embarked + Title_2 + FamilySize, data=in.training, ntree=1000)
 predict.rf<-predict(rf,in.training, type="class")
 predicted.test.rf<-predict(rf,in.testing,type="class")
 conf.matrix.rf<-table(predict.rf, in.training$Survived)
