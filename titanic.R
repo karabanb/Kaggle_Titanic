@@ -70,7 +70,7 @@ combi$Deck<-as.factor(combi$Deck)
 set.seed(1234)
 in.training<-combi[1:891,]
 in.testing<-combi[892:nrow(combi),]
-tree_1<-rpart(Survived~ Pclass + Sex + Age_full+ SibSp + Parch + Fare + Embarked + Title_2 + FamilySize + Deck, data=in.training, method = "class")
+tree_1<-rpart(Survived~ Pclass + Sex + Age+ SibSp + Parch + Fare + Embarked + Title_2 + FamilySize + Deck, data=in.training, method = "class")
 predicted.test_1<-predict(tree_1,in.testing, type = "class")
 predicted.train<-predict(tree_1,in.training, type = "class")
 
@@ -94,4 +94,8 @@ write.csv(my_solution_2,"rf_Titanic.csv",row.names = F)
 ## C5.0
 in.training<-combi[1:891,]
 in.testing<-combi[892:nrow(combi),]
-tree_c50<-C5.0.default(y=in.training$Survived, x=in.training[,c(3,5:8,9,12:16)], trials=10)
+tree_c50<-C5.0.default(y=in.training$Survived, x=in.training[,c(3,5:8,9,13:16)], trials=10)
+predicted.test.c5.0<-predict(tree_c50,in.training)
+predicted.test.c5.0
+
+
