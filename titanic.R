@@ -92,3 +92,6 @@ my_solution_2<-data.frame(PassengerID=test$PassengerId,Survived=predicted.test.r
 write.csv(my_solution_2,"rf_Titanic.csv",row.names = F)
 
 ## C5.0
+in.training<-combi[1:891,]
+in.testing<-combi[892:nrow(combi),]
+tree_c50<-C5.0.default(y=in.training$Survived, x=in.training[,c(3,5:8,9,12:16)], trials=10)
