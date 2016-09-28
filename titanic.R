@@ -7,6 +7,7 @@ library(dplyr)
 library(rpart)
 library(rpart.plot)
 library(randomForest)
+library(C50)
 ###############################################################################
 
 #### READING DATA 
@@ -89,3 +90,5 @@ print(conf.matrix_bench)
 
 my_solution_2<-data.frame(PassengerID=test$PassengerId,Survived=predicted.test.rf)
 write.csv(my_solution_2,"rf_Titanic.csv",row.names = F)
+
+## C5.0
