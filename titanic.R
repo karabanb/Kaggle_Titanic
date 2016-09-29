@@ -91,11 +91,12 @@ print(conf.matrix_bench)
 my_solution_2<-data.frame(PassengerID=test$PassengerId,Survived=predicted.test.rf)
 write.csv(my_solution_2,"rf_Titanic.csv",row.names = F)
 
-## C5.0
+## C5.0 test: test: 0.77033
+
 in.training<-combi[1:891,]
 in.testing<-combi[892:nrow(combi),]
-tree_c50<-C5.0.default(y=in.training$Survived, x=in.training[,c(3,5:8,9,13:16)], trials=10)
-predicted.test.c5.0<-predict(tree_c50,in.training)
-predicted.test.c5.0
+tree_c50<-C5.0.default(y=in.training$Survived, x=in.training[,-c(1,2,4,6,9,11,12)], trials=10)
+predicted.test.c5.0<-predict.C5.0(tree_c50,in.testing[,-c(1,2,4,6,9,11,12)])
 
-
+my_solution_3<-data.frame(PassengerID=test$PassengerId,Survived=predicted.test.c5.0)
+write.csv(my_solution_3,"tree_c50_Titanic.csv",row.names = F)
