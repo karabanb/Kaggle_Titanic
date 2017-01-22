@@ -17,6 +17,8 @@ train<-read.csv("train.csv", stringsAsFactors = F)
 test<-read.csv("test.csv", stringsAsFactors = F)
 test$Survived<-0
 
+train.ix<-c(1:nrow(train))  # train index
+
 ################################################################################
 
 #### CLEANING DATA SET
@@ -52,9 +54,6 @@ str(combi)
 predicted.age<-rpart(Age~ Pclass + Sex  + SibSp + Parch + Fare + Embarked +  Title_2 + FamilySize + Deck, data=combi[!is.na(combi$Age),], method="anova")
 combi$Age_full<-predict(predicted.age, combi)
 
-## subseting of age missing values
-missing.age<-!is.na(combi$Age)
-
 
 ## filing missing Embarked values
 in.training$Embarked[c(62,830)]<-"C"
@@ -71,10 +70,18 @@ combi$Deck<-as.factor(combi$Deck)
 
 ############################## Calulating WoE for ScoreCard ################################
 
-##### WoE for Age #####
-age.wihout.NAs<-combi[missing.age,]
-result.age<-smbinning(age.wihout.NAs,y="Survived",x="Age",p=0.02)
 
+
+##### WoE for Age #####
+
+result.age<-smbinning(train,y="Survived",x="Age",p=0.02)
+combi<-smbinning.gen(combi,result.age,chrname = "AgeBinned")
+
+#### WoE for Title
+
+result.Title<-smbinning.factor(combi[train.ix,],y="Survived",x="Title_2")
+
+smbinning.plot(result.Title, option = "WoE")
 ############################## Building the models #########################################
 
 ## Acc: train: 0.8929, test: 0.78947
