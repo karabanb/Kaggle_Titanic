@@ -8,6 +8,7 @@ library(rpart)
 library(rpart.plot)
 library(randomForest)
 library(C50)
+library(smbinning)
 ###############################################################################
 
 #### READING DATA 
@@ -51,6 +52,10 @@ str(combi)
 predicted.age<-rpart(Age~ Pclass + Sex  + SibSp + Parch + Fare + Embarked +  Title_2 + FamilySize + Deck, data=combi[!is.na(combi$Age),], method="anova")
 combi$Age_full<-predict(predicted.age, combi)
 
+## subseting of age missing values
+missing.age<-!is.na(combi$Age)
+
+
 ## filing missing Embarked values
 in.training$Embarked[c(62,830)]<-"C"
 
@@ -58,11 +63,17 @@ in.training$Embarked[c(62,830)]<-"C"
 combi$Fare[1044]<-mean(combi$Fare, na.rm=T)
 
 ## converting usefull variables into facotrs
-combi$Survived<-as.factor(combi$Survived)
+combi$Survived.Factor<-as.factor(combi$Survived)
 combi$Pclass<-as.factor(combi$Pclass)
 combi$Sex<-as.factor(combi$Sex)
 combi$Embarked<-as.factor(combi$Embarked)
 combi$Deck<-as.factor(combi$Deck)
+
+############################## Calulating WoE for ScoreCard ################################
+
+##### WoE for Age #####
+age.wihout.NAs<-combi[missing.age,]
+result.age<-smbinning(age.wihout.NAs,y="Survived",x="Age",p=0.02)
 
 ############################## Building the models #########################################
 
