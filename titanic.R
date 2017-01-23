@@ -70,8 +70,10 @@ combi$Deck<-as.factor(combi$Deck)
 
 ############################## Calulating WoE for ScoreCard ################################
 
+#### Woe for Sex #####
 
-
+result.sex<-smbinning.factor(combi[train.ix,], y="Survived", x="Sex")
+smbinning.plot(result.sex, "WoE")
 ##### WoE for Age #####
 
 result.age<-smbinning(train,y="Survived",x="Age",p=0.02)
@@ -80,8 +82,11 @@ combi<-smbinning.gen(combi,result.age,chrname = "AgeBinned")
 #### WoE for Title
 
 result.Title<-smbinning.factor(combi[train.ix,],y="Survived",x="Title_2")
+#smbinning.plot(result.Title, option = "WoE")
 
-smbinning.plot(result.Title, option = "WoE")
+#### Woe for PcClass
+result.PcClass<-smbinning.factor(combi[train.ix,],y="Survived",x="Pclass")
+smbinning.plot(result.PcClass,option="WoE")
 ############################## Building the models #########################################
 
 ## Acc: train: 0.8929, test: 0.78947
