@@ -64,6 +64,11 @@ combi$Sex<-as.factor(combi$Sex)
 combi$Embarked<-as.factor(combi$Embarked)
 combi$Deck<-as.factor(combi$Deck)
 
+## Writing to csv
+
+write.table(combi,"combi.csv", sep=";")
+
+
 ############################## Building the models #########################################
 
 ## Acc: train: 0.8929, test: 0.78947
@@ -100,3 +105,9 @@ predicted.test.c5.0<-predict.C5.0(tree_c50,in.testing[,-c(1,2,4,6,9,11,12)])
 
 my_solution_3<-data.frame(PassengerID=test$PassengerId,Survived=predicted.test.c5.0)
 write.csv(my_solution_3,"tree_c50_Titanic.csv",row.names = F)
+
+## fitting models in caret
+
+fit_rpart<-train(Survived~Pclass + Sex + Age+SibSp + Parch + Fare + Embarked + Title_2 + FamilySize + Deck + Age_full, data=in.training,method = "rpart")
+fit_c50<-train(Survived~Pclass + Sex + SibSp + Parch + Fare + Title_2 + FamilySize + Age_full, data=in.training,method = "C5.0")
+fit_rf<-train(Survived~ Pclass + Sex + Age_full + SibSp + Parch + Fare + Embarked + Title_2 + FamilySize, data=in.training, method="rf")
