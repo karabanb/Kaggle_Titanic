@@ -1,6 +1,6 @@
-###############################################################################
 
-#### CALLING USEFULL LIBRARIES
+
+#### CALLING USEFULL LIBRARIES ################################################
 
 library(caret)
 library(dplyr)
@@ -8,17 +8,20 @@ library(rpart)
 library(rpart.plot)
 library(randomForest)
 library(C50)
-###############################################################################
+library(smbinning)
+library(forcats)
 
-#### READING DATA 
+
+#### READING DATA  ############################################################
 
 train<-read.csv("train.csv", stringsAsFactors = F)
 test<-read.csv("test.csv", stringsAsFactors = F)
 test$Survived<-0
 
-################################################################################
+train.ix<-c(1:nrow(train))  # train index
 
-#### CLEANING DATA SET
+
+#### CLEANING DATA SET #########################################################
 
 combi<-rbind(train,test)
 
@@ -51,6 +54,7 @@ str(combi)
 predicted.age<-rpart(Age~ Pclass + Sex  + SibSp + Parch + Fare + Embarked +  Title_2 + FamilySize + Deck, data=combi[!is.na(combi$Age),], method="anova")
 combi$Age_full<-predict(predicted.age, combi)
 
+
 ## filing missing Embarked values
 in.training$Embarked[c(62,830)]<-"C"
 
@@ -58,15 +62,45 @@ in.training$Embarked[c(62,830)]<-"C"
 combi$Fare[1044]<-mean(combi$Fare, na.rm=T)
 
 ## converting usefull variables into facotrs
-combi$Survived<-as.factor(combi$Survived)
+combi$Survived.Factor<-as.factor(combi$Survived)
 combi$Pclass<-as.factor(combi$Pclass)
 combi$Sex<-as.factor(combi$Sex)
 combi$Embarked<-as.factor(combi$Embarked)
 combi$Deck<-as.factor(combi$Deck)
 
+## convertig target value to numeric
+
+combi$Survived.num<-
+
+
 ## Writing to csv
 
 write.table(combi,"combi.csv", sep=";")
+
+############################## Calulating WoE for ScoreCard ################################
+
+#### Woe for Sex #####
+
+result.sex<-smbinning.factor(combi[train.ix,], y="Survived", x="Sex")
+
+smbinning.plot(result.sex, "WoE")
+smbinning.plot(result.sex, "dist")
+smbinning.plot(result.sex, "goodrate")
+smbinning.plot(result.sex, "badrate")
+
+##### WoE for Age #####
+
+result.age<-smbinning(train,y="Survived",x="Age",p=0.02)
+combi<-smbinning.gen(combi,result.age,chrname = "AgeBinned")
+
+#### WoE for Title
+
+result.Title<-smbinning.factor(combi[train.ix,],y="Survived",x="Title_2")
+#smbinning.plot(result.Title, option = "WoE")
+
+#### Woe for PcClass
+result.PcClass<-smbinning.factor(combi[train.ix,],y="Survived",x="Pclass")
+smbinning.plot(result.PcClass,option="WoE")
 
 
 ############################## Building the models #########################################
