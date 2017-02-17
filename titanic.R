@@ -20,6 +20,10 @@ test$Survived<-0
 
 train.ix<-c(1:nrow(train))  # train index
 
+train$Survived_rev[train$Survived==0]<-1
+train$Survived_rev[train$Survived==1]<-0
+
+test$Survived_rev<-0
 
 #### CLEANING DATA SET #########################################################
 
@@ -63,14 +67,11 @@ combi$Fare[1044]<-mean(combi$Fare, na.rm=T)
 
 ## converting usefull variables into facotrs
 combi$Survived.Factor<-as.factor(combi$Survived)
+combi$Survived.Factor.Rev<-as.factor(combi$Sur)
 combi$Pclass<-as.factor(combi$Pclass)
 combi$Sex<-as.factor(combi$Sex)
 combi$Embarked<-as.factor(combi$Embarked)
 combi$Deck<-as.factor(combi$Deck)
-
-## convertig target value to numeric
-
-combi$Survived.num<-
 
 
 ## Writing to csv
@@ -82,6 +83,7 @@ write.table(combi,"combi.csv", sep=";")
 #### Woe for Sex #####
 
 result.sex<-smbinning.factor(combi[train.ix,], y="Survived", x="Sex")
+result.sex.rev<-smbinning.factor(combi[train.ix,], y="Survived_rev", x="Sex")
 
 smbinning.plot(result.sex, "WoE")
 smbinning.plot(result.sex, "dist")
