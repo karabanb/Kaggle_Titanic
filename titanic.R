@@ -1,6 +1,6 @@
-###############################################################################
 
-#### CALLING USEFULL LIBRARIES
+
+#### CALLING USEFULL LIBRARIES ################################################
 
 library(caret)
 library(dplyr)
@@ -9,9 +9,10 @@ library(rpart.plot)
 library(randomForest)
 library(C50)
 library(smbinning)
-###############################################################################
+library(forcats)
 
-#### READING DATA 
+
+#### READING DATA  ############################################################
 
 train<-read.csv("train.csv", stringsAsFactors = F)
 test<-read.csv("test.csv", stringsAsFactors = F)
@@ -19,9 +20,12 @@ test$Survived<-0
 
 train.ix<-c(1:nrow(train))  # train index
 
-################################################################################
+train$Survived_rev[train$Survived==0]<-1
+train$Survived_rev[train$Survived==1]<-0
 
-#### CLEANING DATA SET
+test$Survived_rev<-0
+
+#### CLEANING DATA SET #########################################################
 
 combi<-rbind(train,test)
 
@@ -63,17 +67,29 @@ combi$Fare[1044]<-mean(combi$Fare, na.rm=T)
 
 ## converting usefull variables into facotrs
 combi$Survived.Factor<-as.factor(combi$Survived)
+combi$Survived.Factor.Rev<-as.factor(combi$Sur)
 combi$Pclass<-as.factor(combi$Pclass)
 combi$Sex<-as.factor(combi$Sex)
 combi$Embarked<-as.factor(combi$Embarked)
 combi$Deck<-as.factor(combi$Deck)
+
+
+## Writing to csv
+
+write.table(combi,"combi.csv", sep=";")
 
 ############################## Calulating WoE for ScoreCard ################################
 
 #### Woe for Sex #####
 
 result.sex<-smbinning.factor(combi[train.ix,], y="Survived", x="Sex")
+result.sex.rev<-smbinning.factor(combi[train.ix,], y="Survived_rev", x="Sex")
+
 smbinning.plot(result.sex, "WoE")
+smbinning.plot(result.sex, "dist")
+smbinning.plot(result.sex, "goodrate")
+smbinning.plot(result.sex, "badrate")
+
 ##### WoE for Age #####
 
 result.age<-smbinning(train,y="Survived",x="Age",p=0.02)
@@ -87,6 +103,8 @@ result.Title<-smbinning.factor(combi[train.ix,],y="Survived",x="Title_2")
 #### Woe for PcClass
 result.PcClass<-smbinning.factor(combi[train.ix,],y="Survived",x="Pclass")
 smbinning.plot(result.PcClass,option="WoE")
+
+
 ############################## Building the models #########################################
 
 ## Acc: train: 0.8929, test: 0.78947
@@ -123,3 +141,9 @@ predicted.test.c5.0<-predict.C5.0(tree_c50,in.testing[,-c(1,2,4,6,9,11,12)])
 
 my_solution_3<-data.frame(PassengerID=test$PassengerId,Survived=predicted.test.c5.0)
 write.csv(my_solution_3,"tree_c50_Titanic.csv",row.names = F)
+
+## fitting models in caret
+
+fit_rpart<-train(Survived~Pclass + Sex + Age+SibSp + Parch + Fare + Embarked + Title_2 + FamilySize + Deck + Age_full, data=in.training,method = "rpart")
+fit_c50<-train(Survived~Pclass + Sex + SibSp + Parch + Fare + Title_2 + FamilySize + Age_full, data=in.training,method = "C5.0")
+fit_rf<-train(Survived~ Pclass + Sex + Age_full + SibSp + Parch + Fare + Embarked + Title_2 + FamilySize, data=in.training, method="rf")
