@@ -3,7 +3,7 @@
 library(caret)
 data("GermanCredit")
 
-set.seed(12345)
+set.seed(123456)
 
 folds<-createFolds(GermanCredit$Class,k=10, list = FALSE)
 
@@ -113,18 +113,37 @@ f10<-round(fit10.summary$coefficients[,4], digits = 2)
 
 ##### folds summary #####
 
-#p_value<-c(f1,f2,f3,f4,f5)
+pval_list<-list(f1=f1, f2=f2, f3=f3, f4=f4, f5=f5, f6=f6, f7=f7, f8=f8, f9=f9, f10=f10)
 
-n<-max(length(f1),
-       length(f2),
-       length(f3),
-       length(f4),
-       length(f5),
-       length(f6),
-       length(f7),
-       length(f8),
-       length(f9),
-       length(f10))
+m<-0
+
+for (i in 1:length(pval_list)){
+  length(pval_list[[i]])->m[i]
+}
+
+n<-max(m)
+
+for (i in 1:length(pval_list)){
+  length(pval_list[[i]])<-n
+}
+
+(len<-as.list(sort(c(f1=length(f1),
+             f2=length(f2),
+             f3=length(f3),
+             f4=length(f4),
+             f5=length(f5),
+             f6=length(f6),
+             f7=length(f7),
+             f8=length(f8),
+             f9=length(f9),
+             f10=length(f10)
+), decreasing = TRUE)))
+
+
+(df<-as.data.frame(pval_list[names(len)]))
+
+
+
 
 (len<-sort(c(f1=length(f1),
              f2=length(f2),
@@ -137,17 +156,21 @@ n<-max(length(f1),
              f9=length(f9),
              f10=length(f10)
              ), decreasing = TRUE))
+# 
+# 
+# length(f1)<-n
+# length(f2)<-n
+# length(f3)<-n
+# length(f4)<-n
+# length(f5)<-n
+# length(f6)<-n
+# length(f7)<-n
+# length(f8)<-n
+# length(f9)<-n
+# length(f10)<-n
+# 
+# (df<-cbind(f1,f2,f3,f5,f6,f7,f8,f9,f4,f10))
 
 
-length(f1)<-n
-length(f2)<-n
-length(f3)<-n
-length(f4)<-n
-length(f5)<-n
-length(f6)<-n
-length(f7)<-n
-length(f8)<-n
-length(f9)<-n
-length(f10)<-n
 
-(df<-cbind(f1,f2,f3,f5,f6,f7,f8,f9,f4,f10))
+
