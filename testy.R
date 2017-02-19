@@ -73,13 +73,20 @@ n<-max(length(f1),
        length(f4),
        length(f5))
 
+(len<-sort(c(f1=length(f1),
+      f2=length(f2),
+      f3=length(f3),
+      f4=length(f4),
+      f5=length(f5)), decreasing = TRUE))
+
+
 length(f1)<-n
 length(f2)<-n
 length(f3)<-n
 length(f4)<-n
 length(f5)<-n
 
-(df<-cbind(f1,f2,f3,f4,f5))
+(df<-cbind(f3,f1,f2,f4,f5))
 
 
 
